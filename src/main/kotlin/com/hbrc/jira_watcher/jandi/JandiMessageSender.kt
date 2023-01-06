@@ -18,7 +18,9 @@ class JandiMessageSender (
     private val messageRepository: MessageRepository
 ){
     @Value("\${jandi.progress_bot_url}")
-    lateinit var url: String
+    lateinit var progress_url: String
+    @Value("\${jandi.changed_bot_url}")
+    lateinit var changed_url: String
     private val restTemplate = RestTemplate()
 
     fun sendMessage() {
@@ -27,15 +29,23 @@ class JandiMessageSender (
         val lastProgressHistory = histories.findLast { it.type == "PROGRESS_ISSUES" }
 
         if(lastProgressHistory != null) {
-            val jsonObj = JSONObject("{\"body\": \"${createProgressIssuesText(lastProgressHistory)}\" }")
+            val jsonObj = createProgressIssuesText(lastProgressHistory)
             val header= HttpHeaders()
             header.contentType = MediaType.APPLICATION_JSON
             val httpEntity = HttpEntity(jsonObj.toString(), header)
-            restTemplate.exchange(url,org.springframework.http.HttpMethod.POST,httpEntity, String::class.java)
+            restTemplate.exchange(progress_url,org.springframework.http.HttpMethod.POST,httpEntity, String::class.java)
+        }
+
+        if(lastChangedHistory != null) {
+            val jsonObj = createChangedIssuesText(lastChangedHistory)
+            val header= HttpHeaders()
+            header.contentType = MediaType.APPLICATION_JSON
+            val httpEntity = HttpEntity(jsonObj.toString(), header)
+            restTemplate.exchange(changed_url,org.springframework.http.HttpMethod.POST,httpEntity, String::class.java)
         }
     }
 
-    fun createProgressIssuesText(message: Message): String {
+    fun createProgressIssuesText(message: Message): JSONObject {
         val epicIssueType = object : TypeToken<List<IssueDto.InProgressEpic>>() {}.type
         val issues = Gson().fromJson<ArrayList<IssueDto.InProgressEpic>>(message.json, epicIssueType)
         val text = StringBuilder()
@@ -63,6 +73,33 @@ class JandiMessageSender (
                 }
             }
         }
-        return text.toString()
+        return JSONObject("{\"body\": \"${text}\" }")
+    }
+
+    fun createChangedIssuesText(message: Message): JSONObject {
+        val changedIssueType = object : TypeToken<List<IssueDto.Simple>>() {}.type
+        val issues = Gson().fromJson<ArrayList<IssueDto.Simple>>(message.json, changedIssueType)
+        val text = StringBuilder()
+
+        text.append("[시작된 이슈]\\n")
+        issues.forEach { issue ->
+            if (issue.status == "진행 중") {
+                text.append("ㄴ\uD83C\uDD95${issue.assignee} ${issue.id} ${issue.title}\\n")
+            }
+        }
+
+        text.append("[해결된 이슈]\\n")
+        issues.forEach { issue ->
+            if (issue.status == "완료됨") {
+                text.append("ㄴ\uD83C\uDD97${issue.assignee} ${issue.id} ${issue.title}\\n")
+            }
+        }
+        text.append("[블럭된 이슈]\\n")
+        issues.forEach { issue ->
+            if (issue.status == "BLOCKED") {
+                text.append("ㄴ⏹️${issue.assignee} ${issue.id} ${issue.title}\\n")
+            }
+        }
+        return JSONObject("{\"body\": \"${text}\" }")
     }
 }

@@ -19,7 +19,6 @@ class JobConfiguration(
     private val jobBuilderFactory: JobBuilderFactory,
     private val stepBuilderFactory: StepBuilderFactory,
     private val jiraCrawler: JiraCrawler,
-    private val rabbitTemplate: RabbitTemplate,
     private val jandi : JandiMessageSender
 ) {
     @Bean

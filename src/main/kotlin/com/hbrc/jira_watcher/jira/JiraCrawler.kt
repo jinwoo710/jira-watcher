@@ -165,6 +165,7 @@ println(epicJson)
 
         issueEntities.forEach { issue ->
             val foundIssue = oldIssues.find { it.id == issue.id }
+
             if (foundIssue == null) {
                 issueRepository.save(issue)
                 if (issue.status !== "해야 할 일")
