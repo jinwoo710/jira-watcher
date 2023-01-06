@@ -1,0 +1,34 @@
+spring:
+  h2:
+    console:
+      enabled: true
+  profiles:
+    active: local
+  datasource:
+    hikari:
+      jdbc-url: jdbc:h2:tcp://localhost/~/test
+      driver-class-name: org.h2.Driver
+      username: sa
+      password:
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        dialect: org.hibernate.dialect.H2Dialect
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
+jandi:
+   progress_bot_url: ${JANDI_PROGRESS_BOT_URL}
+   changed_bot_url: ${JANDI_CHANGED_BOT_URL}
+jira:
+  baseURI: ${JIRA_BASEURI}
+  username: ${JIRA_USERNAME}
+  token: ${JIRA_TOKEN}
+
