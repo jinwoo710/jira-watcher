@@ -30,6 +30,16 @@ jobs:
         distribution: 'temurin'
     - name: Build with Gradle
       uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
+      env:
+        H2_USERNAME: ${{ secrets.H2_USERNAME }}
+        JANDI_CHANGED_BOT_URL: ${{ secrets.JANDI_CHANGED_BOT_URL}}
+        JANDI_PROGRESS_BOT_URL: ${{secrets.JANDI_PROGRESS_BOT_URL}}
+        JDBC_URL: ${{ secrets.JDBC_URL}}
+        JIRA_BASEURI: ${{ secrets.JIRA_BASEURI}}
+        JIRA_TOKEN: ${{ secrets.JIRA_TOKEN}}
+        JIRA_USERNAME: ${{ secrets.JIRA_USERNAME}}
+        RABBITMQ_PASSWORD: ${{ secrets.RABBITMQ_PASSWORD}}
+        RABBITMQ_PORT: ${{ secrets.RABBITMQ_PORT}}
+        RABBITMQ_USERNAME: ${{ secrets.RABBITMQ_USERNAME}}
       with:
         arguments: build
-        path: ./build      
