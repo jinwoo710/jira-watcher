@@ -10,62 +10,66 @@ import com.hbrc.jira_watcher.repository.MessageRepository
 import com.atlassian.jira.rest.client.api.domain.Issue as JiraIssue
 import org.codehaus.jettison.json.JSONObject
 import com.google.gson.Gson
+import org.springframework.batch.core.StepContribution
+import org.springframework.batch.core.scope.context.ChunkContext
+import org.springframework.batch.core.step.tasklet.Tasklet
+import org.springframework.batch.repeat.RepeatStatus
 import org.springframework.stereotype.Component
 import java.net.URI
 
 @Component
-class JiraCrawler (
+class JiraCrawlerTasklet(
     private val config: JiraConfig,
     private val issueRepository: IssueRepository,
     private val messageRepository: MessageRepository
-) {
-    fun crawlingIssues() {
+) : Tasklet {
+
+    override fun execute(contribution: StepContribution, chunkContext: ChunkContext): RepeatStatus? {
         val jiraIssues = ArrayList<JiraIssue>()
         val issueEntities = ArrayList<Issue>()
         val progressEpicIssues = ArrayList<IssueDto.InProgressEpic>()
         val progressTaskIssues = ArrayList<IssueDto.InProgressTask>()
         val progressTaskIssuesWithoutEpic = ArrayList<IssueDto.InProgressTask>()
         val progressSubTaskIssues = ArrayList<IssueDto.InProgressSubTask>()
-
         val factory = AsynchronousJiraRestClientFactory().createWithBasicHttpAuthentication(
             URI.create(config.baseURI),
             config.username,
             config.token
         )
         val projects = factory.projectClient.allProjects.claim()
-        println(projects)
 
-        projects.forEach{ project ->
-                var page = 0
-                val maxResult = 50
-                while (true) {
-                    println("${project.name} 프로젝트의 ${page}번째 페이지 크롤링 중")
-                    val search = factory.searchClient.searchJql(
-                        "project = ${project.name} ORDER BY created DESC, issuetype ASC",
-                        maxResult,
-                        maxResult * page,
-                        null
-                    )
-                    val issues = search.claim().issues
-                    issues.forEach { issue ->
-                            jiraIssues.add(issue)
-                            separateIssue(issue, progressEpicIssues, progressTaskIssues, progressSubTaskIssues)
-                            translateIssueToEntity(issue, issueEntities)
+        projects.forEach { project ->
+            var page = 0
+            val maxResult = 50
+            while (true) {
+                println("${project.name} 프로젝트의 ${page}번째 페이지 크롤링 중")
+                val search = factory.searchClient.searchJql(
+                    "project = ${project.name} ORDER BY created DESC, issuetype ASC",
+                    maxResult,
+                    maxResult * page,
+                    null
+                )
+                val issues = search.claim().issues
+                issues.forEach { issue ->
+                    jiraIssues.add(issue)
+                    separateIssue(issue, progressEpicIssues, progressTaskIssues, progressSubTaskIssues)
+                    translateIssueToEntity(issue, issueEntities)
 
-                    }
-                    if (issues.count() < maxResult) {
-                        break
-                    } else {
-                        page += 1
-                    }
                 }
+                if (issues.count() < maxResult) {
+                    break
+                } else {
+                    page += 1
+                }
+            }
         }
 
         println("크롤링 완료")
         println("[진행 중] 및 [변경사항 메세지] 감지 중")
-        reconnectIssues(progressEpicIssues, progressTaskIssues,progressTaskIssuesWithoutEpic, progressSubTaskIssues)
+        reconnectIssues(progressEpicIssues, progressTaskIssues, progressTaskIssuesWithoutEpic, progressSubTaskIssues)
         detectChangedIssues(issueEntities)
         println("[진행 중] 및 [변경사항 메시지] 저장 완료")
+        return RepeatStatus.FINISHED
     }
 
     fun separateIssue(
@@ -83,7 +87,11 @@ class JiraCrawler (
             progressEpicIssues.add(epicIssue)
         } else if (issue.issueType.name == "작업" && issue.status.name == "진행 중") {
             val parentInfo = issue.fields.find { field -> field.name == "상위" }
-            val parentId = if(parentInfo != null) {JSONObject(parentInfo?.value.toString())["key"] as String} else {null}
+            val parentId = if (parentInfo != null) {
+                JSONObject(parentInfo?.value.toString())["key"] as String
+            } else {
+                null
+            }
             val taskIssue = IssueDto.InProgressTask(
                 issue.key,
                 issue.summary,
@@ -141,20 +149,14 @@ class JiraCrawler (
 
                 taskIssue?.tasks?.add(it)
             }
-            if(it.parent_id == null)
+            if (it.parent_id == null)
                 progressTaskIssuesWithoutEpic.add(it)
         }
-        val dummy = IssueDto.InProgressEpic(id="null",title="에픽 설정 없음", tasks=progressTaskIssuesWithoutEpic)
-        progressEpicIssues.add(dummy)
-
+        val nonEpicTaskIssues = IssueDto.InProgressEpic(id = "null", title = "에픽 설정 없음", tasks = progressTaskIssuesWithoutEpic)
+        progressEpicIssues.add(nonEpicTaskIssues)
         val epicJson = Gson().toJson(progressEpicIssues).toString()
         val message: Message = MessageDto.Insert("PROGRESS_ISSUES", epicJson).toEntity()
-        println("-----------------------------------------------")
-println(epicJson)
-        println("-----------------------------------------------")
         messageRepository.save(message)
-
-
     }
 
     fun detectChangedIssues(
@@ -177,13 +179,8 @@ println(epicJson)
                 }
             }
         }
-
-
         val changedIssuesJson = Gson().toJson(changedIssues).toString()
         val message: Message = MessageDto.Insert("CHANGED_ISSUES", changedIssuesJson).toEntity()
         messageRepository.save(message)
-
-
     }
-
 }

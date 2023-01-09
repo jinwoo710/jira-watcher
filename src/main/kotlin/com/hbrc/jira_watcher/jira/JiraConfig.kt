@@ -12,5 +12,4 @@ class JiraConfig(
     var username: String = "",
     var token: String =""
 ) {
-    val isValid get() = baseURI.isNotEmpty() && username.isNotEmpty() && token.isNotEmpty()
 }

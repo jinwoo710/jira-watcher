@@ -6,10 +6,10 @@ spring:
     active: local
   datasource:
     hikari:
-      jdbc-url: jdbc:h2:tcp://localhost/~/test
+      jdbc-url: ${JDBC_URL}
       driver-class-name: org.h2.Driver
-      username: sa
-      password:
+      username: ${H2_USERNAME}
+      password: ${H2_PASSWORD}
 
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
@@ -21,12 +21,12 @@ spring:
 
   rabbitmq:
     host: localhost
-    port: 5672
+    port: ${RABBITMQ_PORT}
     username: ${RABBITMQ_USERNAME}
     password: ${RABBITMQ_PASSWORD}
 jandi:
-   progress_bot_url: ${JANDI_PROGRESS_BOT_URL}
-   changed_bot_url: ${JANDI_CHANGED_BOT_URL}
+  progressBotUrl: ${JANDI_PROGRESS_BOT_URL}
+  changedBotUrl: ${JANDI_CHANGED_BOT_URL}
 jira:
   baseURI: ${JIRA_BASEURI}
   username: ${JIRA_USERNAME}
