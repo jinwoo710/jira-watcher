@@ -51,12 +51,6 @@ tasks.withType(KotlinCompile) {
 	}
 }
 
-tasks {
-	processResources {
-		duplicatesStrategy = org.gradle.api.file.DuplicatesStrategy.INCLUDE
-	}
-}
-
 tasks.named('test') {
 	useJUnitPlatform()
 }

@@ -29,7 +29,7 @@ jobs:
         java-version: '11'
         distribution: 'temurin'
     - name: Build with Gradle
-      uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
+      run: ./gradlew build
       env:
         H2_USERNAME: ${{ secrets.H2_USERNAME }}
         JANDI_CHANGED_BOT_URL: ${{ secrets.JANDI_CHANGED_BOT_URL}}
@@ -41,5 +41,4 @@ jobs:
         RABBITMQ_PASSWORD: ${{ secrets.RABBITMQ_PASSWORD}}
         RABBITMQ_PORT: ${{ secrets.RABBITMQ_PORT}}
         RABBITMQ_USERNAME: ${{ secrets.RABBITMQ_USERNAME}}
-      with:
-        arguments: build
+
