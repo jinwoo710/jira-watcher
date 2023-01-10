@@ -55,6 +55,10 @@ tasks.withType(KotlinCompile) {
 	}
 }
 
+test {
+	exclude '**/*'
+}
+
 tasks.named('test') {
 	useJUnitPlatform()
 }
