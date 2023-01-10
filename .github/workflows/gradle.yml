@@ -39,6 +39,3 @@ jobs:
         with:
           name: jira-watcher-artifact
           path: ./build/libs
-
-      - name: Run Jar
-        run: java -jar ./build/libs/*.jar
