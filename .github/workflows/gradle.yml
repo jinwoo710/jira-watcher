@@ -31,7 +31,7 @@ jobs:
         cache: gradle
 
     - name: Grant execute p ermission for gradlew
-      width:
+      with:
         path: ./build
       run:
        npm install
