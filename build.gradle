@@ -26,6 +26,10 @@ repositories {
 	maven { setUrl("https://packages.atlassian.com/mvn/maven-atlassian-external/") }
 }
 
+jar {
+	enabled = false
+}
+
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-amqp'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
