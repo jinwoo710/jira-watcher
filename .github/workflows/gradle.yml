@@ -32,4 +32,8 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build
       - name: move
-        run: cd \build\libs ls
+        run: cd build
+      - name: move2
+        run: cd libs
+      - name: list
+        run: ls
