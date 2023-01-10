@@ -37,8 +37,9 @@ jobs:
 
       - name: deliver application.properties
         run: echo "${{ secrets.PROPERTIES }}" > ./src/main/resources/application.properties
-             cat ./src/main/resources/application.properties
         shell: bash
+      - name: read file
+        run: cat ./src/main/resources/application.properties
 
       - name: Build with Gradle
         run: ./gradlew build
