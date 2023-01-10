@@ -17,6 +17,14 @@ configurations {
 	}
 }
 
+tasks.withType(Jar) {
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+	manifest {
+		attributes["Main-Class"] = "com.example.backendapp.BackendAppApplication"
+	}
+}
+
 repositories {
 	mavenCentral()
 	maven { setUrl("https://packages.atlassian.com/mvn/maven-atlassian-external/") }
