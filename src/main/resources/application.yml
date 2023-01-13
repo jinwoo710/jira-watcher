@@ -19,6 +19,7 @@ spring:
     database-platform: org.hibernate.dialect.H2Dialect
     properties:
       hibernate:
+        use-new-id-generator-mappings: false
         format_sql: true
         show_sql: true
         dialect: org.hibernate.dialect.H2Dialect
