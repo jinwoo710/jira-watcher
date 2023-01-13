@@ -26,5 +26,3 @@ jira:
   baseURI: ${JIRA_BASEURI}
   username: ${JIRA_USERNAME}
   token: ${JIRA_TOKEN}
-
-server.port: 8083
