@@ -19,11 +19,6 @@ spring:
         show_sql: true
         dialect: org.hibernate.dialect.H2Dialect
 
-  rabbitmq:
-    host: localhost
-    port: ${RABBITMQ_PORT}
-    username: ${RABBITMQ_USERNAME}
-    password: ${RABBITMQ_PASSWORD}
 jandi:
   progressBotUrl: ${JANDI_PROGRESS_BOT_URL}
   changedBotUrl: ${JANDI_CHANGED_BOT_URL}
