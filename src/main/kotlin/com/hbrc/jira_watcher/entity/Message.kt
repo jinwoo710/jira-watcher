@@ -8,7 +8,7 @@ import javax.persistence.*
 @Entity
 class Message (
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue
     var id: Int = 0,
     var type: String = "",
     @Column(length = 32768)
