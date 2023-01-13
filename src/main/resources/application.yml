@@ -15,6 +15,7 @@ spring:
       password: ${H2_PASSWORD}
 
   jpa:
+    defer-datasource-initialization: true
     database-platform: org.hibernate.dialect.H2Dialect
     properties:
       hibernate:
