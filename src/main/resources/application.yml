@@ -23,6 +23,7 @@ spring:
         format_sql: true
         show_sql: true
         dialect: org.hibernate.dialect.H2Dialect
+        ddl-auto: create
 
 jandi:
   progressBotUrl: ${JANDI_PROGRESS_BOT_URL}
