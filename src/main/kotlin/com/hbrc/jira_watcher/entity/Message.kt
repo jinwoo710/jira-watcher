@@ -7,14 +7,14 @@ import javax.persistence.*
 
 @Entity
 class Message (
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    var id: Int = 0,
     var type: String = "",
-    @Column(length = 32768)
+    @Column(columnDefinition = "LONGTEXT")
     var json: String = ""
 )
 {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    val id: Int = 0
     @CreationTimestamp
     var createAt: LocalDateTime = LocalDateTime.now()
 

@@ -9,10 +9,10 @@ spring:
     active: local
   datasource:
     hikari:
-      jdbc-url: ${JDBC_URL}
       driver-class-name: org.h2.Driver
-      username: ${H2_USERNAME}
-      password: ${H2_PASSWORD}
+    url: ${JDBC_URL}
+    username: ${H2_USERNAME}
+    password: ${H2_PASSWORD}
 
   jpa:
     defer-datasource-initialization: true

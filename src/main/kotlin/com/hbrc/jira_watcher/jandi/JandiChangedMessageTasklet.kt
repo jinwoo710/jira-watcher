@@ -46,20 +46,23 @@ class JandiChangedMessageTasklet(
         text.append("\uD83C\uDD95시작된 이슈\\n")
         issues.forEach { issue ->
             if (issue.status == "진행 중") {
-                text.append("ㄴ${issue.assignee} ${issue.id} ${issue.title}\\n")
+                var title = issue.title.replace("\"","\'")
+                text.append("ㄴ${issue.assignee} ${issue.id} ${title}\\n")
             }
         }
 
         text.append("\uD83C\uDD97해결된 이슈\\n")
         issues.forEach { issue ->
             if (issue.status == "완료됨") {
-                text.append("ㄴ${issue.assignee} ${issue.id} ${issue.title}\\n")
+                var title = issue.title.replace("\"","\'")
+                text.append("ㄴ${issue.assignee} ${issue.id} ${title}\\n")
             }
         }
         text.append("⏹️블럭된 이슈\\n")
         issues.forEach { issue ->
             if (issue.status == "BLOCKED") {
-                text.append("ㄴ${issue.assignee} ${issue.id} ${issue.title}\\n")
+                var title = issue.title.replace("\"","\'")
+                text.append("ㄴ${issue.assignee} ${issue.id} ${title}\\n")
             }
         }
         return JSONObject("{\"body\": \"${text}\" }")
