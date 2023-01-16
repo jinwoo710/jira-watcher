@@ -1,12 +1,13 @@
 spring:
   batch:
     job:
-      names: ${JOB_NAME:NONE}
+      names: jiraJob
     jdbc:
       initialize-schema: always
   h2:
     console:
       enabled: true
+      path: /h2-console
   profiles:
     active: local
   datasource:
@@ -31,6 +32,3 @@ jira:
   baseURI: ${JIRA_BASEURI}
   username: ${JIRA_USERNAME}
   token: ${JIRA_TOKEN}
-
-server:
-  port: 8081
